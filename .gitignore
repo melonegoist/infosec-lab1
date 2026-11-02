@@ -37,3 +37,17 @@ build/
 
 ### Mac OS ###
 .DS_Store
+
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+*.jks
+
+logs/
+*.log
+hs_err_pid*.log
+*.hprof

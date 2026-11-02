@@ -1,0 +1,27 @@
+spring:
+  config:
+    import: optional:file:.env[.properties]
+
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/lab1}
+    username: ${DB_APP_USERNAME}
+    password: ${DB_APP_PASSWORD}
+    hikari:
+      pool-name: lab1-local
+      maximum-pool-size: 5
+      minimum-idle: 1
+      connection-timeout: 5000
+      max-lifetime: 1800000
+
+  flyway:
+    user: ${DB_OWNER_USERNAME}
+    password: ${DB_OWNER_PASSWORD}
+
+app:
+  bootstrap-user:
+    username: ${APP_BOOTSTRAP_USERNAME:}
+    password: ${APP_BOOTSTRAP_PASSWORD:}
+
+server:
+  address: 127.0.0.1
+  port: 8080

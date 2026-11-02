@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<FindBugsFilter
+        xmlns="https://github.com/spotbugs/filter/3.0.0"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="https://github.com/spotbugs/filter/3.0.0 https://raw.githubusercontent.com/spotbugs/spotbugs/3.1.0/spotbugs/etc/findbugsfilter.xsd">
+
+    <Match>
+        <Class name="org.itmo.lab1.application.auth.LoginService"/>
+        <Method name="login"/>
+        <Bug pattern="CRLF_INJECTION_LOGS"/>
+    </Match>
+    <Match>
+        <Class name="org.itmo.lab1.infrastructure.bootstrap.BootstrapUserRunner"/>
+        <Method name="run"/>
+        <Bug pattern="CRLF_INJECTION_LOGS"/>
+    </Match>
+
+    <Match>
+        <Class name="org.itmo.lab1.infrastructure.security.jwt.JwtTokenVerifier"/>
+        <Method name="rejected"/>
+        <Bug pattern="CRLF_INJECTION_LOGS"/>
+    </Match>
+
+    <Match>
+        <Class name="org.itmo.lab1.domain.user.RawPassword"/>
+        <Method name="normalize"/>
+        <Bug pattern="IMPROPER_UNICODE"/>
+    </Match>
+
+    <Match>
+        <Class name="org.itmo.lab1.infrastructure.web.limit.RequestBodySizeLimitFilter$BodyLimitedRequest"/>
+        <Method name="getInputStream"/>
+        <Bug pattern="EI_EXPOSE_REP"/>
+    </Match>
+
+    <Match>
+        <Package name="~org\.itmo\.lab1\.infrastructure\.web(\..+)?"/>
+        <Bug pattern="SPRING_ENDPOINT"/>
+    </Match>
+</FindBugsFilter>

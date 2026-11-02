@@ -1,0 +1,66 @@
+spring:
+  application:
+    name: lab1-secure-api
+  profiles:
+    default: local
+
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.security.autoconfigure.UserDetailsServiceAutoConfiguration
+
+  datasource:
+    hikari:
+      data-source-properties:
+        preferQueryMode: extended
+        logServerErrorDetail: false
+
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        use_sql_comments: false
+        default_schema: lab1
+
+  jackson:
+    deserialization:
+      fail-on-unknown-properties: true
+      fail-on-trailing-tokens: true
+
+  flyway:
+    schemas: lab1
+    clean-disabled: true
+
+server:
+  error:
+    include-stacktrace: never
+    include-exception: false
+    include-message: never
+    include-binding-errors: never
+    whitelabel:
+      enabled: false
+  max-http-request-header-size: 8KB
+  tomcat:
+    max-http-form-post-size: 16KB
+    max-swallow-size: 64KB
+
+app:
+  http:
+    max-request-body-size: 16KB
+  required-properties:
+    - app.security.jwt.secret
+    - spring.datasource.username
+    - spring.datasource.password
+    - spring.flyway.user
+    - spring.flyway.password
+  security:
+    jwt:
+      secret: ${JWT_SECRET}
+      issuer: lab1-auth
+      audience: lab1-api
+      access-token-ttl: 15m
+      clock-skew: 30s
+    password-hashing:
+      max-concurrent: 4
+      acquire-timeout: 1s
