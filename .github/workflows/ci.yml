@@ -2,6 +2,7 @@ name: CI
 
 on:
   push:
+    branches: [main]
   pull_request:
   schedule:
     - cron: '17 3 * * *'
@@ -98,7 +99,7 @@ jobs:
   sca:
     name: SCA (OWASP Dependency-Check)
     runs-on: ubuntu-24.04
-    timeout-minutes: 30
+    timeout-minutes: 60
     permissions:
       contents: read
       security-events: write
@@ -120,14 +121,25 @@ jobs:
         run: echo "day=$(date -u +%Y-%m-%d)" >> "${GITHUB_OUTPUT}"
 
       - name: Restore NVD database
-        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9
+        id: nvd-cache
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9
         with:
           path: ~/.cache/dependency-check-data
           key: dependency-check-data-${{ steps.nvd-cache-key.outputs.day }}
           restore-keys: dependency-check-data-
 
+      - name: Update NVD database
+        run: ./mvnw -B -ntp dependency-check:update-only -DdataDirectory="${HOME}/.cache/dependency-check-data"
+
+      - name: Save NVD database
+        if: steps.nvd-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9
+        with:
+          path: ~/.cache/dependency-check-data
+          key: dependency-check-data-${{ steps.nvd-cache-key.outputs.day }}
+
       - name: Dependency-Check (fails on CVSS >= 7)
-        run: ./mvnw -B -ntp dependency-check:check -DdataDirectory="${HOME}/.cache/dependency-check-data"
+        run: ./mvnw -B -ntp dependency-check:check -DautoUpdate=false -DdataDirectory="${HOME}/.cache/dependency-check-data"
 
       - name: Upload SCA results to code scanning
         if: always() && hashFiles('target/dependency-check-report.sarif') != '' && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository)
